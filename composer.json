@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "ArrayPress\\AcceptLanguage\\": "src/"
+      "ArrayPress\\AcceptLanguageUtils\\": "src/"
     },
     "files": [
       "src/Functions.php"
