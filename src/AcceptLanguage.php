@@ -409,6 +409,53 @@ class AcceptLanguage {
 	}
 
 	/**
+	 * Get base language options (without regions).
+	 *
+	 * @param bool $as_options If true, returns array of ['value' => '', 'label' => ''] format.
+	 *
+	 * @return array
+	 */
+	public static function get_base_languages( bool $as_options = false ): array {
+		$languages = [
+			'en' => __( 'English', 'arraypress' ),
+			'es' => __( 'Spanish', 'arraypress' ),
+			'fr' => __( 'French', 'arraypress' ),
+			'de' => __( 'German', 'arraypress' ),
+			'it' => __( 'Italian', 'arraypress' ),
+			'pt' => __( 'Portuguese', 'arraypress' ),
+			'nl' => __( 'Dutch', 'arraypress' ),
+			'ru' => __( 'Russian', 'arraypress' ),
+			'ja' => __( 'Japanese', 'arraypress' ),
+			'zh' => __( 'Chinese', 'arraypress' ),
+			'ko' => __( 'Korean', 'arraypress' ),
+			'ar' => __( 'Arabic', 'arraypress' ),
+			'hi' => __( 'Hindi', 'arraypress' ),
+			'tr' => __( 'Turkish', 'arraypress' ),
+			'pl' => __( 'Polish', 'arraypress' ),
+			'sv' => __( 'Swedish', 'arraypress' ),
+			'da' => __( 'Danish', 'arraypress' ),
+			'no' => __( 'Norwegian', 'arraypress' ),
+			'fi' => __( 'Finnish', 'arraypress' ),
+			'el' => __( 'Greek', 'arraypress' ),
+			'he' => __( 'Hebrew', 'arraypress' ),
+			'th' => __( 'Thai', 'arraypress' ),
+			'vi' => __( 'Vietnamese', 'arraypress' ),
+			'id' => __( 'Indonesian', 'arraypress' ),
+			'ms' => __( 'Malay', 'arraypress' ),
+			'cs' => __( 'Czech', 'arraypress' ),
+			'hu' => __( 'Hungarian', 'arraypress' ),
+			'ro' => __( 'Romanian', 'arraypress' ),
+			'uk' => __( 'Ukrainian', 'arraypress' ),
+		];
+
+		if ( ! $as_options ) {
+			return $languages;
+		}
+
+		return self::to_options( $languages );
+	}
+
+	/**
 	 * Convert key/value array to options format.
 	 *
 	 * @param array $items Key/value array.
