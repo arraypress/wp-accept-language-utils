@@ -1,7 +1,6 @@
 {
   "name": "arraypress/wp-accept-language-utils",
   "description": "A lean WordPress utility for parsing and working with HTTP Accept-Language headers",
-  "version": "1.0.0",
   "type": "library",
   "license": "GPL-2.0-or-later",
   "homepage": "https://github.com/arraypress/wp-accept-language-utils",
@@ -12,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=7.4"
+    "php": ">=8.2"
   },
   "autoload": {
     "psr-4": {
