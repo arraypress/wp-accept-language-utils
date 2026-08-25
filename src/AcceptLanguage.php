@@ -32,7 +32,14 @@ class AcceptLanguage {
 			return null;
 		}
 
-		return $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+		// WordPress slashes the superglobals on load, so a header has to be
+		// unslashed before it is read, and sanitized because it arrives from
+		// the client. Neither costs anything here: a well-formed
+		// Accept-Language contains only letters, digits and `,;=.-`, all of
+		// which survive both.
+		$header = sanitize_text_field( wp_unslash( (string) $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) );
+
+		return '' !== $header ? $header : null;
 	}
 
 	/**
@@ -121,10 +128,20 @@ class AcceptLanguage {
 				$q    = 1.0;
 			}
 
+			// A quality is defined as 0 to 1 (RFC 9110 section 12.4.2), and
+			// this header arrives from the client. Left alone, `q=99` sorts
+			// above every well-formed entry and becomes the primary language,
+			// which is a preference the sender does not get to assert.
+			$q = max( 0.0, min( 1.0, $q ) );
+
 			// Normalize the language code
 			$lang = self::normalize( $lang );
 
-			if ( ! empty( $lang ) ) {
+			// `q=0` is the header's way of saying "not this one". Keeping it
+			// meant accepts() returned true for a language the client had
+			// explicitly refused, and get_best_match() would return it when it
+			// was the only one on offer.
+			if ( ! empty( $lang ) && $q > 0.0 ) {
 				$languages[ $lang ] = $q;
 			}
 		}
@@ -218,15 +235,15 @@ class AcceptLanguage {
 	 * Find the best match from a list of available languages.
 	 *
 	 * @param array       $available Array of available language codes.
-	 * @param string|null $default   Default language if no match found.
+	 * @param string|null $fallback  Language to fall back on when nothing matches.
 	 *
 	 * @return string|null The best matching language or default.
 	 */
-	public static function get_best_match( array $available, ?string $default = null ): ?string {
+	public static function get_best_match( array $available, ?string $fallback = null ): ?string {
 		$accepted = self::parse();
 
 		if ( empty( $accepted ) || empty( $available ) ) {
-			return $default;
+			return $fallback;
 		}
 
 		// Normalize available languages
@@ -254,7 +271,7 @@ class AcceptLanguage {
 			}
 		}
 
-		return $default;
+		return $fallback;
 	}
 
 	/**
@@ -474,5 +491,4 @@ class AcceptLanguage {
 
 		return $options;
 	}
-
 }

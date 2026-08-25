@@ -40,12 +40,12 @@ if ( ! function_exists( 'get_preferred_language' ) ) {
 	 * @since 1.0.0
 	 *
 	 * @param array       $available Array of available language codes.
-	 * @param string|null $default   Default language if no match found.
+	 * @param string|null $fallback  Language to fall back on when nothing matches.
 	 *
 	 * @return string|null The best matching language or default.
 	 */
-	function get_preferred_language( array $available, ?string $default = null ): ?string {
-		return AcceptLanguage::get_best_match( $available, $default );
+	function get_preferred_language( array $available, ?string $fallback = null ): ?string {
+		return AcceptLanguage::get_best_match( $available, $fallback );
 	}
 }
 
