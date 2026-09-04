@@ -117,8 +117,9 @@ class AcceptLanguage {
 				[ $lang, $quality ] = explode( ';', $part, 2 );
 				$lang = trim( $lang );
 
-				// Parse quality value
-				if ( preg_match( '/q=([0-9.]+)/', $quality, $matches ) ) {
+				// Parse quality value. Parameter names are case-insensitive
+				// (RFC 9110 section 5.6.6), so `Q=` counts too.
+				if ( preg_match( '/q=([0-9.]+)/i', $quality, $matches ) ) {
 					$q = (float) $matches[1];
 				} else {
 					$q = 1.0;
@@ -141,7 +142,12 @@ class AcceptLanguage {
 			// meant accepts() returned true for a language the client had
 			// explicitly refused, and get_best_match() would return it when it
 			// was the only one on offer.
-			if ( ! empty( $lang ) && $q > 0.0 ) {
+			//
+			// And what does not look like a language tag is dropped. The
+			// header is the client's to write, and a "language" of
+			// `<b>en</b>` or `../x` is something a caller would otherwise
+			// print, or use as a file name.
+			if ( '' !== $lang && $q > 0.0 && self::is_tag( $lang ) ) {
 				$languages[ $lang ] = $q;
 			}
 		}
@@ -300,6 +306,20 @@ class AcceptLanguage {
 		];
 
 		return in_array( $primary, $rtl_languages, true );
+	}
+
+	/**
+	 * Whether a string has the shape of a language tag.
+	 *
+	 * Letters, digits and hyphens in subtags of one to eight characters
+	 * (RFC 5646), or the wildcard.
+	 *
+	 * @param string $tag The candidate.
+	 *
+	 * @return bool
+	 */
+	private static function is_tag( string $tag ): bool {
+		return (bool) preg_match( '/^(?:\*|[a-z0-9]{1,8}(?:-[a-z0-9]{1,8})*)$/i', $tag );
 	}
 
 	/**

@@ -124,6 +124,27 @@ final class AcceptLanguageTest extends TestCase {
 	}
 
 	/**
+	 * The parameter name is case-insensitive, as the standard says.
+	 */
+	public function test_an_upper_case_q_is_read(): void {
+		$this->assertSame( [ 'de' => 0.5 ], AcceptLanguage::parse( 'de;Q=0.5' ) );
+	}
+
+	/**
+	 * What does not look like a language tag is dropped.
+	 *
+	 * The header is the client's to write. A "language" of `<b>en</b>` or
+	 * `../x` is something a caller would otherwise print, or use as a file
+	 * name, on the strength of it having come out of a parser.
+	 */
+	public function test_what_is_not_a_tag_is_dropped(): void {
+		$this->assertSame(
+			[ 'zh-HANT-TW' => 1.0, 'it' => 0.5 ],
+			AcceptLanguage::parse( 'en us,fr!,<b>de</b>,../x,it;q=0.5,zh-Hant-TW,toolongsubtag' )
+		);
+	}
+
+	/**
 	 * A quality that is not a number at all is treated as unqualified.
 	 */
 	public function test_an_unreadable_quality_is_treated_as_one(): void {
